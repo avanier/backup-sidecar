@@ -1,0 +1,32 @@
+log_level: debug
+
+# cronlike ?
+# schedule:
+#   days:
+#   hours:
+
+recipeient:
+  key_ids:
+    - 2B1794F5A055D681285F6A5D6B7049C3203BCBF9
+  keys:
+    - |
+      -----BEGIN PGP PUBLIC KEY BLOCK-----
+      mQINBFZPhr8BEAChJJXyTFWMWvGaLUAFd0qD/YiNSpvIvCJgs17rCaUCal6/2urg
+      [...]
+      =CT40
+      -----END PGP PUBLIC KEY BLOCK-----
+  keylists:
+    - https://mahkeylist.example
+
+jobs:
+  job1:
+    sources:
+      - /home
+      - /var/log
+      - /opt/ax
+    destination:
+      home_server:
+        type: ssh
+        user: bobthebackup
+        host: home-server
+        path: /srv/backups
