@@ -14,7 +14,11 @@ Gem::Specification.new do |s|
   s.executables = ['backup-sidecar']
   s.licenses = ['MIT']
   s.homepage = 'https://www.github.com/avanier/backup-sidecar'
-  s.add_dependency('ougai', '~> 1.7')
-  s.add_dependency('thor', '~> 0.20.0')
+  s.required_ruby_version = '~> 2.3.0'
   s.add_dependency('awesome_print')
+  s.add_dependency('backup', '~> 4.3.0')
+  s.add_dependency('mixlib-shellout', '~> 2.4')
+  s.add_dependency('ougai', '~> 1.7')
+  s.add_dependency('rufus-scheduler', '~> 3.5.2')
+  s.add_dependency('thor', '~> 0.18.1')
 end

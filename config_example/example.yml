@@ -1,11 +1,7 @@
-log_level: debug
+# schedule: '0 3 * * *' # every day at 3AM
+schedule: '* * * * *' # every minute
 
-# cronlike ?
-# schedule:
-#   days:
-#   hours:
-
-recipeient:
+recipients:
   key_ids:
     - 2B1794F5A055D681285F6A5D6B7049C3203BCBF9
   keys:
@@ -17,16 +13,26 @@ recipeient:
       -----END PGP PUBLIC KEY BLOCK-----
   keylists:
     - https://mahkeylist.example
+    - https://notherlist.example
 
-jobs:
-  job1:
-    sources:
-      - /home
-      - /var/log
-      - /opt/ax
-    destination:
-      home_server:
-        type: ssh
-        user: bobthebackup
-        host: home-server
-        path: /srv/backups
+compress_with: bzip2
+
+tar_options:
+  - '-h'
+  - '-xattrs'
+
+sources:
+  add:
+    - /home
+    - /var/log
+    - /opt/ax
+  exclude:
+    - /opt/ax/tmp
+    - '*.tmp'
+
+destination:
+  home_server:
+    type: S3
+    user: bobthebackup
+    host: home-server
+    path: /srv/backups
