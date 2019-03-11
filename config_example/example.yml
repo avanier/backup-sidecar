@@ -2,20 +2,15 @@
 schedule: '* * * * *' # every minute
 
 recipients:
-  key_ids:
-    - 2B1794F5A055D681285F6A5D6B7049C3203BCBF9
   keys:
-    - |
+    alexis@amonoid.io: |
       -----BEGIN PGP PUBLIC KEY BLOCK-----
       mQINBFZPhr8BEAChJJXyTFWMWvGaLUAFd0qD/YiNSpvIvCJgs17rCaUCal6/2urg
       [...]
       =CT40
       -----END PGP PUBLIC KEY BLOCK-----
-  keylists:
-    - https://mahkeylist.example
-    - https://notherlist.example
 
-compress_with: bzip2
+compress_with: Bzip2
 
 tar_options:
   - '-h'

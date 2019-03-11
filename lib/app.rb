@@ -2,6 +2,8 @@
 
 require_relative('version')
 require_relative('logging')
+require('erb')
+require('fileutils')
 require('rufus-scheduler')
 require('tempfile')
 require('thor')
@@ -52,7 +54,7 @@ module Ax
 
         # fetch, validate and parse keylist if necessary
         # keylists should be refetched and revalidated every backup job instance
-        if c.dig('recipients', 'keylists').any?
+        if c.dig('recipients', 'keylists')
           Log.warn(
             'Keylists retreival and parsing is not implemented',
             keylists: c['recipients']['keylists']
@@ -68,13 +70,21 @@ module Ax
 
         s.cron(c['schedule']) do
           Log.debug('Schedule triggerred', schedule: c['schedule'])
-          # try
-            # instantiate tempfile
-            # render out template based on config
+          begin
+            # workspace = Dir.mktmpdir
+
+            template_source = File.read(File.join(
+              File.dirname(__FILE__),
+              'assets/template.erb'
+            ))
+            template = ERB.new(template_source)
+            Log.debug template.result(binding)
+
             # call the gem with mixlib shellout :facepalm:
               # we'll have to see about making sure the env's passed to it ...
-          # ensure
-            # delete tempfile
+          ensure
+            # FileUtils.rm_rf(workspace)
+          end
         end
 
         s.join

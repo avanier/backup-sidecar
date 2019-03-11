@@ -1,0 +1,26 @@
+Backup::Model.new(:backup_sidecar, 'Templated config for backup-sidecar') do
+  archive :main_archive do |archive|
+    <% c["sources"]["add"].each do |s| -%>
+    archive.add "<%= s %>"
+    <% end %>
+    <% c["sources"]["exclude"].each do |e| -%>
+    archive.exclude "<%= e %>"
+    <% end %>
+    <% if c["compress_with"] %>
+    compress_with <%= c["compress_with"] %>
+    <% end %>
+    <% if c["tar_options"] %>
+    archive.tar_options "<%= c["tar_options"].join(" ") %>"
+    <% end %>
+  end
+  <% if c["recipients"] %>
+  encrypt_with GPG do |encryption|
+    encrption.recipients = []
+    <% c["recipients"]["keys"].each do |k, v| -%>
+    encryption.keys[k] = v
+    encrption.recipients += [k]
+    <% end %>
+  end
+  <% end %>
+
+end
