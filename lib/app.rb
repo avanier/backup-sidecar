@@ -2,6 +2,7 @@
 
 require_relative('version')
 require_relative('logging')
+require_relative('backup')
 require('erb')
 require('fileutils')
 require('rufus-scheduler')
@@ -25,6 +26,7 @@ module Ax
     class App < Thor
       include Ax::BackupSidecar::Version
       include Ax::BackupSidecar::Logging
+      include Ax::BackupSidecar::Backup
 
       package_name 'backup-sidecar'
 
@@ -66,25 +68,12 @@ module Ax
 
         s.in('0s') do
           Log.debug('This is starting now')
+          perform_backup(c)
         end if ENV['START_NOW']
 
         s.cron(c['schedule']) do
-          Log.debug('Schedule triggerred', schedule: c['schedule'])
-          begin
-            # workspace = Dir.mktmpdir
-
-            template_source = File.read(File.join(
-              File.dirname(__FILE__),
-              'assets/template.erb'
-            ))
-            template = ERB.new(template_source)
-            Log.debug template.result(binding)
-
-            # call the gem with mixlib shellout :facepalm:
-              # we'll have to see about making sure the env's passed to it ...
-          ensure
-            # FileUtils.rm_rf(workspace)
-          end
+          # Log.debug('Schedule triggerred', schedule: c['schedule'])
+          # perform_backup(c)
         end
 
         s.join

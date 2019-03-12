@@ -1,26 +1,52 @@
+# This is the template instance of <%= Time.now.utc.iso8601 %>
+
 Backup::Model.new(:backup_sidecar, 'Templated config for backup-sidecar') do
-  archive :main_archive do |archive|
-    <% c["sources"]["add"].each do |s| -%>
-    archive.add "<%= s %>"
-    <% end %>
-    <% c["sources"]["exclude"].each do |e| -%>
-    archive.exclude "<%= e %>"
-    <% end %>
+  archive :main_archive do |a|
+    <%- c["sources"]["add"].each do |s| -%>
+    a.add "<%= s %>"
+    <%- end -%>
+    <%- c["sources"]["exclude"].each do |e| -%>
+    a.exclude "<%= e %>"
+    <%- end -%>
     <% if c["compress_with"] %>
     compress_with <%= c["compress_with"] %>
-    <% end %>
+    <%- end -%>
     <% if c["tar_options"] %>
-    archive.tar_options "<%= c["tar_options"].join(" ") %>"
-    <% end %>
+    a.tar_options "<%= c["tar_options"].join(" ") %>"
+    <%- end -%>
   end
   <% if c["recipients"] %>
-  encrypt_with GPG do |encryption|
-    encrption.recipients = []
-    <% c["recipients"]["keys"].each do |k, v| -%>
-    encryption.keys[k] = v
-    encrption.recipients += [k]
-    <% end %>
+  encrypt_with GPG do |e|
+    e.recipients = []
+    <% c["recipients"]["keys"].each do |k, v| %>
+    e.keys["<%= k %>"] = "<%= v.split("\n").join('\n') %>"
+    e.recipients += ["<%= k %>"]
+    <%- end -%>
   end
-  <% end %>
-
+  <%- end -%>
+  <% c["destination"].select { |d, o| o.dig("type") == "GCS-S3" }.each do |d, o| %>
+  store_with S3, :<%= d.gsub('.', '_') %> do |s3|
+    s3.access_key_id     = "<%= o["key_id"] %>"
+    s3.secret_access_key = "<%= o["access_key"] %>"
+    <%- if o["region"] -%>
+    s3.region              = "<%= o["region"] %>"
+    <%- end -%>
+    s3.bucket            = "<%= d %>"
+    <%- if o["path"] -%>
+    s3.path              = "<%= o["path"] %>"
+    <%- end -%>
+    <%- if o["storage_class"] -%>
+    s3.storage_class     = :<%= o["storage_class"] %>
+    <%- end -%>
+    # See this article for more info
+    # https://cloud.google.com/storage/docs/request-endpoints
+    s3.fog_options       = {
+      endpoint: "https://www.googleapis.com/upload/storage/v1/b/",
+      aws_signature_version: 2
+    }
+    # This block will result in retrying every minute and a half for an hour
+    s3.max_retries = 15
+    s3.retry_waitsec = 90
+  end
+  <%- end -%>
 end

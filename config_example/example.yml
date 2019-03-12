@@ -9,6 +9,12 @@ recipients:
       [...]
       =CT40
       -----END PGP PUBLIC KEY BLOCK-----
+    frompre@gmail.com: |
+      -----BEGIN PGP PUBLIC KEY BLOCK-----
+      mQINBFqSRxIBEACw0E2eeeolSAOjXvBfRWyXRH8cwSHIt3d2HkDj2PgjgtjMlc3t
+      [...]
+      =y0Rs
+      -----END PGP PUBLIC KEY BLOCK-----
 
 compress_with: Bzip2
 
@@ -23,11 +29,14 @@ sources:
     - /opt/ax
   exclude:
     - /opt/ax/tmp
-    - '*.tmp'
+    - '**/*.tmp'
 
 destination:
-  home_server:
-    type: S3
-    user: bobthebackup
-    host: home-server
-    path: /srv/backups
+  mybucket.fqdn.com:
+    type: GCS-S3
+    path: /backups/some/dest/path
+    storage_class: reduced_redundancy
+    key_id: herpderp
+    access_key: somesecret
+  bad_byucket:
+    type: crummy
